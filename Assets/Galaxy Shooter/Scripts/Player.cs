@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class Player : MonoBehaviour
@@ -6,9 +7,12 @@ public class Player : MonoBehaviour
     // data type (int, floats, bool, strings)
     // every variable has a NAME
     // option value assigned
+    public bool canTripleShot = false;
 
     [SerializeField]
     GameObject _laserPrefab;
+    [SerializeField]
+    GameObject _tripleShotPrefab;
     // fireRate is 0.25f
     // canFire -- has the amount of time between firing passed?
     // Time.time
@@ -36,10 +40,16 @@ public class Player : MonoBehaviour
 
     void Shoot()
     {
-        if(Time.time > _canFire)
+        if (Time.time > _canFire)
         {
-            // spawn my laser
-            Instantiate(_laserPrefab, transform.position + new Vector3(0, 0.88f, 0), Quaternion.identity);
+            if (!canTripleShot)
+            {
+                Instantiate(_laserPrefab, transform.position + new Vector3(0, 0.88f, 0), Quaternion.identity);
+            }
+            else if(canTripleShot)
+            {
+                Instantiate(_tripleShotPrefab, transform.position, Quaternion.identity);
+            }
             _canFire = Time.time + _fireRate;
         }
     }
@@ -82,5 +92,16 @@ public class Player : MonoBehaviour
         {
             transform.position = new Vector3(9.5f, transform.position.y, 0);
         }
+    }
+
+    public void TripleShotPowerUpOn()
+    {
+        canTripleShot = true;
+        StartCoroutine(TrippleShotPowerDownRoutine());
+    }
+    private IEnumerator TrippleShotPowerDownRoutine()
+    {
+        yield return new WaitForSeconds(5.0f);
+        canTripleShot = false;
     }
 }
